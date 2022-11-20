@@ -74,3 +74,11 @@ class StandardScaler():
             mean = mean[-1:]
             std = std[-1:]
         return (data * std) + mean
+    def save(self,save_path):
+        with open(save_path,"wb")as writer:
+            np.save(writer,self.mean)
+            np.save(writer,self.std)
+    def load(self,save_path):
+        with open(save_path,"rb") as reader:
+            self.mean=np.load(reader)
+            self.std=np.load(reader)
