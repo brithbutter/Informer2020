@@ -219,6 +219,7 @@ class Dataset_Custom(Dataset):
         self.scaler = StandardScaler()
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
+        print(df_raw)
         '''
         df_raw.columns: ['date', ...(other features), target feature]
         '''
@@ -229,7 +230,8 @@ class Dataset_Custom(Dataset):
         else:
             cols = list(df_raw.columns); cols.remove(self.target); cols.remove('date')
         df_raw = df_raw[['date']+cols+[self.target]]
-
+        print("************************************************")
+        print(df_raw)
         num_train = int(len(df_raw)*0.7)
         num_test = int(len(df_raw)*0.2)
         num_vali = len(df_raw) - num_train - num_test
@@ -247,6 +249,7 @@ class Dataset_Custom(Dataset):
         if self.scale:
             train_data = df_data[border1s[0]:border2s[0]]
             self.scaler.fit(train_data.values)
+            self.scaler.save("./"+self.data_path[:-4])
             data = self.scaler.transform(df_data.values)
         else:
             data = df_data.values
@@ -267,7 +270,7 @@ class Dataset_Custom(Dataset):
         s_end = s_begin + self.seq_len
         r_begin = s_end - self.label_len 
         r_end = r_begin + self.label_len + self.pred_len
-
+        # print(s_begin,s_end,r_begin,r_end)
         seq_x = self.data_x[s_begin:s_end]
         if self.inverse:
             seq_y = np.concatenate([self.data_x[r_begin:r_begin+self.label_len], self.data_y[r_begin+self.label_len:r_end]], 0)
@@ -316,6 +319,7 @@ class Dataset_Pred(Dataset):
         self.scaler = StandardScaler()
         df_raw = pd.read_csv(os.path.join(self.root_path,
                                           self.data_path))
+        # print(df_raw)
         '''
         df_raw.columns: ['date', ...(other features), target feature]
         '''
@@ -325,7 +329,8 @@ class Dataset_Pred(Dataset):
         else:
             cols = list(df_raw.columns); cols.remove(self.target); cols.remove('date')
         df_raw = df_raw[['date']+cols+[self.target]]
-        
+        print("****************************************")
+        print(df_raw)
         border1 = len(df_raw)-self.seq_len
         border2 = len(df_raw)
         
@@ -343,10 +348,12 @@ class Dataset_Pred(Dataset):
             
         tmp_stamp = df_raw[['date']][border1:border2]
         tmp_stamp['date'] = pd.to_datetime(tmp_stamp.date)
+        # 产生一个以当前最后一个时间点为起点[-1]，固定长度[pred_len],根据一个固定频率[freq]的时间戳
         pred_dates = pd.date_range(tmp_stamp.date.values[-1], periods=self.pred_len+1, freq=self.freq)
         
         df_stamp = pd.DataFrame(columns = ['date'])
         df_stamp.date = list(tmp_stamp.date.values) + list(pred_dates[1:])
+
         data_stamp = time_features(df_stamp, timeenc=self.timeenc, freq=self.freq[-1:])
 
         self.data_x = data[border1:border2]
@@ -361,7 +368,7 @@ class Dataset_Pred(Dataset):
         s_end = s_begin + self.seq_len
         r_begin = s_end - self.label_len
         r_end = r_begin + self.label_len + self.pred_len
-
+        print(s_begin,s_end,r_begin,r_end)
         seq_x = self.data_x[s_begin:s_end]
         if self.inverse:
             seq_y = self.data_x[r_begin:r_begin+self.label_len]
