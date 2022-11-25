@@ -1,9 +1,16 @@
-from data.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_Pred
-from exp.exp_basic import Exp_Basic
-from models.model import Informer, InformerStack
+from Informer2020.data.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_Pred
+from Informer2020.exp.exp_basic import Exp_Basic
+from Informer2020.models.model import Informer, InformerStack
 
-from utils.tools import EarlyStopping, adjust_learning_rate
-from utils.metrics import metric
+from Informer2020.utils.tools import EarlyStopping, adjust_learning_rate
+from Informer2020.utils.metrics import metric
+
+# from data.data_loader import Dataset_ETT_hour, Dataset_ETT_minute, Dataset_Custom, Dataset_Pred
+# from exp.exp_basic import Exp_Basic
+# from models.model import Informer, InformerStack
+
+# from utils.tools import EarlyStopping, adjust_learning_rate
+# from utils.metrics import metric
 
 import numpy as np
 
@@ -52,7 +59,7 @@ class Exp_Informer(Exp_Basic):
                 self.args.mix,
                 self.device
             ).float()
-        print(model) 
+        # print(model) 
         if self.args.use_multi_gpu and self.args.use_gpu:
             model = nn.DataParallel(model, device_ids=self.args.device_ids)
         return model
@@ -95,7 +102,7 @@ class Exp_Informer(Exp_Basic):
             freq=freq,
             cols=args.cols
         )
-        print(flag, len(data_set))
+        # print(flag, len(data_set))
         data_loader = DataLoader(
             data_set,
             batch_size=batch_size,
@@ -129,7 +136,7 @@ class Exp_Informer(Exp_Basic):
         train_data, train_loader = self._get_data(flag = 'train')
         vali_data, vali_loader = self._get_data(flag = 'val')
         test_data, test_loader = self._get_data(flag = 'test')
-        print("=================")
+        # print("=================")
         path = os.path.join(self.args.checkpoints, setting)
         if not os.path.exists(path):
             os.makedirs(path)
@@ -266,7 +273,8 @@ class Exp_Informer(Exp_Basic):
         
         np.save(folder_path+'real_prediction.npy', preds)
         
-        return
+#         return pred_data.scaler.inverse_transform(preds)
+        return (preds)
 
     def _process_one_batch(self, dataset_object, batch_x, batch_y, batch_x_mark, batch_y_mark):
         batch_x = batch_x.float().to(self.device)
