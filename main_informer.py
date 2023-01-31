@@ -75,7 +75,6 @@ parser = argparse.ArgumentParser()
 # with open("args.txt","w") as f:
 #     json.dump(args.__dict__, f, indent=2)
 
-
 args,unknown = parser.parse_known_args()
 with open("args.txt", 'r') as f:
     args.__dict__ = json.load(f)
@@ -110,17 +109,20 @@ args.freq = args.freq[-1:]
 
 print('Args in experiment:')
 print(args)
-
 Exp = Exp_Informer
-if COMMANDLINE_TRAIN:
-    for ii in range(args.itr):
-        # setting record of experiments
-        setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(args.model, args.data, args.features, 
-                    args.seq_len, args.label_len, args.pred_len,
-                    args.d_model, args.n_heads, args.e_layers, args.d_layers, args.d_ff, args.attn, args.factor, 
-                    args.embed, args.distil, args.mix, args.des, ii)
-
+class Informer_Train():
+    def __init__(self) -> None:
+        pass
+    def train(self):    
         
+        for ii in range(args.itr):
+            # setting record of experiments
+            setting = '{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_at{}_fc{}_eb{}_dt{}_mx{}_{}_{}'.format(args.model, args.data, args.features, 
+                        args.seq_len, args.label_len, args.pred_len,
+                        args.d_model, args.n_heads, args.e_layers, args.d_layers, args.d_ff, args.attn, args.factor, 
+                        args.embed, args.distil, args.mix, args.des, ii)
+
+    
         exp = Exp(args) # set experiments
         print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
         exp.train(setting)
